@@ -1,0 +1,32 @@
+import React from "react";
+import { LuX } from "react-icons/lu";
+
+const Drawer = ({ isOpen, onClose, title, children }) => {
+    return <div
+        className={` bg-white border border-gray-300/40 rounded fixed top-20 right-0 z-40 h-[calc(100dvh-64px)] p-4 mt-3 overflow-y-auto transition-transform duration-300 w-full md:w-[40vw] shadow-2xl shadow-cyan-800/10 ${isOpen ? "translate-x-0" : "translate-x-full hidden"}`}
+        tabIndex="-1"
+        aria-labelledby="drawer-right-label"
+    >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4" >
+            <h5
+                id="drawer-right-label"
+                className="flex items-center text-base font-semibold text-black"
+            >
+                {title}
+            </h5>
+            {/* Close Button */}
+            <button
+                type="button"
+                onClick={onClose}
+                className="text-gray-400 bg-transparent hover:bg-gray-300 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex items-center justify-center"
+            >
+                <LuX className=" text-lg" />
+            </button>
+        </div>
+        {/* Body content */}
+        <div className=" text-sm mx-3 mb-6 ">{children}</div>
+    </div>
+};
+
+export default Drawer
