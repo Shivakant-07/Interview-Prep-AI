@@ -31,8 +31,8 @@ app.use(session({
         name: "session",
         keys: ["cyberwolve"],
         httpOnly: true,
-        secure: false,       // true if using https
-        sameSite: "lax",     // "lax" works for localhost
+        secure: false,
+        sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000 // 1 day
     }
 }));
@@ -43,8 +43,8 @@ app.use(passport.session());
 
 // -------------------- CORS --------------------
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173", // frontend origin
-    credentials: true,               // allow cookies
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
@@ -65,6 +65,11 @@ app.use("/api/ai/generate-explanation", protect, generateConceptExplanation);
 
 // Serve uploads folder
 app.use("/uploads", express.static(join(__dirname, "uploads")));
+
+app.get("/", (req, res) => {
+    res.send("✅ Interview Prep AI Backend is running!");
+});
+
 
 // -------------------- Start Server --------------------
 const PORT = process.env.PORT || 5000;
