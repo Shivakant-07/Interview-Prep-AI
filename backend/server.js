@@ -13,6 +13,7 @@ import { protect } from "./middlewares/authMiddleware.js";
 import { generateInterviewQuestions, generateConceptExplanation } from "./controllers/aiController.js";
 import passport from "passport";
 import session from "express-session";
+import MongoStore from "connect-mongo";   // ✅ new
 import "./config/passport.js";
 
 // Set up __dirname manually
@@ -21,36 +22,43 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
+// -------------------- Connect DB --------------------
+connectDB();
 
 // -------------------- Session --------------------
-app.use(session({
-    secret: "cyberwolve",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        name: "session",
-        keys: ["cyberwolve"],
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
-    }
-}));
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || "cyberwolve",
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGO_URI, // same URI you use in connectDB()
+            ttl: 14 * 24 * 60 * 60, // 14 days
+        }),
+        cookie: {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // only true in prod
+            sameSite: "lax",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        },
+    })
+);
 
 // -------------------- Passport --------------------
 app.use(passport.initialize());
 app.use(passport.session());
 
 // -------------------- CORS --------------------
-app.use(cors({
-    origin: process.env.CLIENT_URL || "https://interview-prep-ai-frontend-a02d.onrender.com",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
-
-// -------------------- Connect DB --------------------
-connectDB();
+app.use(
+    cors({
+        origin:
+            process.env.CLIENT_URL ||
+            "https://interview-prep-ai-frontend-a02d.onrender.com",
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
 
 // -------------------- Middleware --------------------
 app.use(express.json());
@@ -69,7 +77,6 @@ app.use("/uploads", express.static(join(__dirname, "uploads")));
 app.get("/", (req, res) => {
     res.send("✅ Interview Prep AI Backend is running!");
 });
-
 
 // -------------------- Start Server --------------------
 const PORT = process.env.PORT || 5000;
