@@ -4,7 +4,8 @@ import { BASE_URL } from "./apiPaths";
 
 // Create Axios instance with default config
 const axiosInstance = axios.create({
-    baseURL: BASE_URL,
+    baseURL: BASE_URL || "https://interview-prep-ai-backend-0ltm.onrender.com",
+    withCredentials: true,
     timeout: 80000,
     headers: {
         "Content-Type": "application/json",
