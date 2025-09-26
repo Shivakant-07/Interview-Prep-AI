@@ -9,7 +9,7 @@ const { sign, verify } = pkg;
 
 // Generate JWT Token
 export const generateToken = (userId) => {
-    return sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    return sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
 // @desc Register a new user
